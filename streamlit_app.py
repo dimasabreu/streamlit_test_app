@@ -22,7 +22,7 @@ fruits_to_show = my_fruit_list.loc[fruits_selected]
 
 if(len(fruits_selected) < 1):
    fruits_to_show = fruits_selected
-else
+else:
    fruits_to_show = my_fruit_list.loc[fruits_selected]
 
 # Display the table on the page.

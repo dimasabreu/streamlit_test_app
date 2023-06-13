@@ -21,7 +21,7 @@ fruits_selected = st.multiselect("Pick some fruits:", list(my_fruit_list.index),
 fruits_to_show = my_fruit_list.loc[fruits_selected]
 
 if(len(fruits_selected) < 1):
-   fruits_to_show = list(my_fruit_list)
+   fruits_selected = st.multiselect("Pick some fruits:", list(my_fruit_list.index)
 else:
    fruits_to_show = my_fruit_list.loc[fruits_selected]
 

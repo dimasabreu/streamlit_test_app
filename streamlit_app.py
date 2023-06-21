@@ -27,6 +27,12 @@ fruits_to_show = my_fruit_list.loc[fruits_selected]
 
 st.dataframe(fruits_to_show)
 
+#repeatable block
+def get_fruityvice_data(this_fruit_choice):
+   fruityvice_response = requests.get("https://fruityvice.com/api/fruit/" + fruit_choice)
+   fruityvice_normalized = pandas.json_normalize(fruityvice_response.json())
+   return fruityvice_normalized
+
 # api section
 st.header("Fruityvice Fruit Advice!")
 try:
@@ -34,12 +40,13 @@ try:
    if not fruit_choice:
          st.error("please select a fruit")
    else:
-      fruityvice_response = requests.get("https://fruityvice.com/api/fruit/" + fruit_choice)
-      fruityvice_normalized = pandas.json_normalize(fruityvice_response.json())
-      st.dataframe(fruityvice_normalized)
+      back_from_function = get_fruityvice_data(fruit_choice)
+      st.dataframe(back_from_function)
 except URLError as e:
    st.error()
 
+   
+   
 st.stop()
 my_cnx = snowflake.connector.connect(**st.secrets["snowflake"])
 my_cur = my_cnx.cursor()

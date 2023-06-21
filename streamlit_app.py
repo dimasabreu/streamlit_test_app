@@ -1,4 +1,8 @@
 import streamlit as st
+import snowflake.connector
+import requests
+import pandas
+from urllib.error import URLError
 
 st.title('My Parents New Healthy Diner')
 
@@ -11,7 +15,6 @@ st.text('🥑🍞 Avocado Toast')
 
 st.header('🍌🥭 Build Your Own Fruit Smoothie 🥝🍇')
 
-import pandas
 
 my_fruit_list = pandas.read_csv("https://uni-lab-files.s3.us-west-2.amazonaws.com/dabw/fruit_macros.txt")
 my_fruit_list = my_fruit_list.set_index('Fruit')
@@ -24,26 +27,27 @@ fruits_to_show = my_fruit_list.loc[fruits_selected]
 
 st.dataframe(fruits_to_show)
 
-#new section
+# api section
 st.header("Fruityvice Fruit Advice!")
-fruit_choice = st.text_input('What fruit would you like information about?','Kiwi')
-st.write('The user entered ', fruit_choice)
+try:
+   fruit_choice = st.text_input('What fruit would you like information about?')
+   if not fruit_choice:
+         st.error("please select a fruit")
+   else:
+      fruityvice_response = requests.get("https://fruityvice.com/api/fruit/" + fruit_choice)
+      fruityvice_normalized = pandas.json_normalize(fruityvice_response.json())
+      st.dataframe(fruityvice_normalized)
+ except URLError as e:
+   st.error()
 
-import requests
-fruityvice_response = requests.get("https://fruityvice.com/api/fruit/" + fruit_choice)
-
-
-# write your own comment -what does the next line do? 
-fruityvice_normalized = pandas.json_normalize(fruityvice_response.json())
-# write your own comment - what does this do?
-st.dataframe(fruityvice_normalized)
-
-import snowflake.connector
-
+st.stop()
 my_cnx = snowflake.connector.connect(**st.secrets["snowflake"])
 my_cur = my_cnx.cursor()
 my_cur.execute("select * from fruit_load_list")
 my_data_rows = my_cur.fetchall()
 st.header("The fruit load list contains:")
 st.dataframe(my_data_rows)
+
+st.text("add a new fruit")
+my_cur.execute("ïnsert into fruit_load_list values ('from streamlit')")
    
